@@ -43,11 +43,10 @@ int** createAdjacencyMatrix(int numVertices, int** adjacencyList, int numEdges) 
 // Функция для создания матрицы инцидентности из списка ребер и списка вершин
 int** createIncidenceMatrix(int numVertices, const pair<int, int>* edges, int numEdges) {
     int** incidenceMatrix = new int* [numVertices];
-
     for (int i = 0; i < numVertices; ++i) {
         incidenceMatrix[i] = new int[numEdges];
         for (int j = 0; j < numEdges; ++j) {
-            incidenceMatrix[i][j] = 0;
+            incidenceMatrix[i][j] = 0; // Изначально устанавливаем все значения в 0
         }
     }
 
@@ -56,7 +55,10 @@ int** createIncidenceMatrix(int numVertices, const pair<int, int>* edges, int nu
         int v = edges[i].second;
 
         incidenceMatrix[u][i] = 1;
-        incidenceMatrix[v][i] = -1;
+
+        if (u != v) {
+            incidenceMatrix[v][i] = 1;
+        }
     }
 
     return incidenceMatrix;
