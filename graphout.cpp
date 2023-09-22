@@ -1,66 +1,56 @@
 #include <iostream>
-
 using namespace std;
 
-// Функция для создания списка смежности из списка ребер
 int** createAdjacencyList(int numVertices, const pair<int, int>* edges, int numEdges, bool isDirected) {
     int** adjacencyList = new int* [numVertices];
-
     for (int i = 0; i < numVertices; ++i) {
         adjacencyList[i] = new int[numVertices];
         for (int j = 0; j < numVertices; ++j) {
             adjacencyList[i][j] = 0;
         }
     }
-
     for (int i = 0; i < numEdges; ++i) {
         int u = edges[i].first;
         int v = edges[i].second;
-
         adjacencyList[u][v] = 1;
         if (!isDirected) {
-            adjacencyList[v][u] = 1; // Для неориентированных графов добавляем обратное ребро
+            adjacencyList[v][u] = 1;
         }
     }
-
     return adjacencyList;
 }
 
-// Функция для создания матрицы смежности из списка смежности
 int** createAdjacencyMatrix(int numVertices, int** adjacencyList, int numEdges) {
     int** adjacencyMatrix = new int* [numVertices];
-
     for (int i = 0; i < numVertices; ++i) {
         adjacencyMatrix[i] = new int[numVertices];
         for (int j = 0; j < numVertices; ++j) {
             adjacencyMatrix[i][j] = adjacencyList[i][j];
         }
     }
-
     return adjacencyMatrix;
 }
 
-// Функция для создания матрицы инцидентности из списка ребер и списка вершин
-int** createIncidenceMatrix(int numVertices, const pair<int, int>* edges, int numEdges) {
+int** createIncidenceMatrix(int numVertices, const pair<int, int>* edges, int numEdges, bool isDirected) {
     int** incidenceMatrix = new int* [numVertices];
     for (int i = 0; i < numVertices; ++i) {
         incidenceMatrix[i] = new int[numEdges];
         for (int j = 0; j < numEdges; ++j) {
-            incidenceMatrix[i][j] = 0; // Изначально устанавливаем все значения в 0
+            incidenceMatrix[i][j] = 0;
         }
     }
-
     for (int i = 0; i < numEdges; ++i) {
         int u = edges[i].first;
         int v = edges[i].second;
-
-        incidenceMatrix[u][i] = 1;
-
-        if (u != v) {
+        if (isDirected) {
+            incidenceMatrix[u][i] = -1;
+            incidenceMatrix[v][i] = 1;
+        }
+        else {
+            incidenceMatrix[u][i] = 1;
             incidenceMatrix[v][i] = 1;
         }
     }
-
     return incidenceMatrix;
 }
 
@@ -70,25 +60,20 @@ int main() {
     setlocale(LC_ALL, "Rus");
     cout << "Введите количество вершин: ";
     cin >> numVertices;
-
-    cout << "Введите количество ребер: ";
+    cout << "Введите количество рёбер: ";
     cin >> numEdges;
-
     cout << "Граф ориентированный? (1 - да, 0 - нет): ";
     cin >> isDirected;
-
     pair<int, int>* edges = new pair<int, int>[numEdges];
-
-    cout << "Введите пары вершин для ребер (например, 0 1 для ребра 0->1):" << endl;
+    cout << "Введите пары вершин для рёбер (например, 0 1 для ребра 0->1):" << endl;
     for (int i = 0; i < numEdges; ++i) {
         int u, v;
         cin >> u >> v;
         edges[i] = make_pair(u, v);
     }
-
     int** adjacencyList = createAdjacencyList(numVertices, edges, numEdges, isDirected);
     int** adjacencyMatrix = createAdjacencyMatrix(numVertices, adjacencyList, numEdges);
-    int** incidenceMatrix = createIncidenceMatrix(numVertices, edges, numEdges);
+    int** incidenceMatrix = createIncidenceMatrix(numVertices, edges, numEdges, isDirected);
 
     // Вывод списка смежности
     cout << "Список смежности:" << endl;
@@ -126,7 +111,6 @@ int main() {
         delete[] adjacencyMatrix[i];
         delete[] incidenceMatrix[i];
     }
-
     delete[] adjacencyList;
     delete[] adjacencyMatrix;
     delete[] incidenceMatrix;
